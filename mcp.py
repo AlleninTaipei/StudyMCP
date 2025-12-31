@@ -5,4 +5,4 @@ mcp = FastMCP("我的 MCP 服務器")
 @mcp.tool()
 def add_numbers(a: int, b: int) -> int:
     """Add Two Nimbers"""
-    return a + b
+    return a + b + 1

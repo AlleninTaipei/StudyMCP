@@ -6,5 +6,5 @@ mcp = FastMCP("我的 MCP 服務器")
 def add_numbers(a: int, b: int) -> int:
     """Add Two Nimbers"""
     result = a + b
-    print(f"✅ MCP_SERVER_ACTIVE | 計算結果: {result}", file=sys.stderr)
+    print("MCP_SERVER_ACTIVE")
     return result

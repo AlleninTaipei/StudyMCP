@@ -8,12 +8,14 @@ paginate: false
 
 # Introduction to Agents
 
+- Agent Tools & Interoperability with Model Context Protocol (MCP)
+- FastMCP Cloud
+- Fast to build
+
 ASRock AI Center
 Allen Sun 
 
 ---
-
-<!--_class: lead  -->
 
 # Agent Tools & Interoperability with Model Context Protocol (MCP)
 5-Day AI Agents Intensive Course with Google - Day 1
@@ -123,8 +125,6 @@ Agent Gym（模擬環境）
 
 ----
 
-<!--_class: lead  -->
-
 # FastMCP Cloud
 [🔗](https://fastmcp.cloud) 部署 MCP Server 的最快方法
 
@@ -187,38 +187,33 @@ def add_numbers(a: int， b: int) -> int:
     return a + b
 ```
 
+啟動 FastMCP Server，讓 `mcp.py` 的 `mcp` 這個工具透過 HTTP 協議在 port 8000 運行。
+
 ```bash
 fastmcp run mcp.py:mcp --transport http --port 8000
 ```
-啟動 FastMCP Server，讓 `mcp.py` 的 `mcp` 這個工具透過 HTTP 協議在 port 8000 運行。
 
 ---
 
 <style scoped>section{font-size:28px;}</style>
 
-按 `CTRL-C` 關閉服務
+## 按 `CTRL-C` 關閉服務
 
 ![bg contain](assets/mymcp.jpg)
 
 ---
 
-<style scoped>section{font-size:28px;}</style>
+<style scoped>section{font-size:24px;}</style>
 
-建立 `git` 專案並 `commit mcp.py`
-登入 FastMCP Cloud
-關閉 Authentication 後 Deploy Server
+#### 1️⃣ 建立 `git` 專案並 `commit mcp.py`
+#### 2️⃣ 登入 FastMCP Cloud
+#### 3️⃣ 關閉 Authentication 後 Deploy Server
 
 ![bg contain](assets/deploymymcp.jpg)
 
 ---
 
-<style scoped>section{font-size:28px;}</style>
-
 ![bg contain](assets/deployed.jpg)
-
-<br><br><br><br><br><br><br><br><br><br>
-
-$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$ 等待狀態從 Building → Production
 
 ---
 
@@ -227,6 +222,341 @@ $~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$ 等待狀態從 Building �
 * 使用 FastMCP Cloud 的 ChatMCP 可以 進行測試
 * 每次修改 `mcp.py` 再 `commit` 後 ，FastMCP 會自動重新 deploy
 * MCP Server 的 Status、Log，都可以查詢
+
+---
+
+# Fast to build
+
+---
+
+## 1️⃣ 抽象化複雜的 MCP 協議層
+
+### 原始 MCP 協議的複雜度:
+
+```python
+# 原始 MCP 協議 (沒有 FastMCP 的話)
+import json
+from mcp.server import Server
+from mcp.server.models import InitializationOptions
+from mcp.types import Tool, TextContent
+
+# 1. 建立 server 實例
+server = Server("my-server")
+```
+---
+
+```python
+# 2. 定義工具的 JSON Schema
+tool_schema = {
+    "name": "add",
+    "description": "Add two numbers",
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "a": {"type": "number"},
+            "b": {"type": "number"}
+        },
+        "required": ["a", "b"]
+    }
+}
+```
+
+---
+
+```python
+# 3. 註冊工具
+@server.list_tools()
+async def list_tools():
+    return [Tool(**tool_schema)]
+
+# 4. 處理工具調用
+@server.call_tool()
+async def call_tool(name: str, arguments: dict):
+    if name == "add":
+        result = arguments["a"] + arguments["b"]
+        return [TextContent(type="text", text=str(result))]
+
+# 5. 手動處理連接、協議、錯誤...
+# 還要處理 JSON-RPC 格式、訊息路由、錯誤處理等等
+```
+
+---
+
+## FastMCP 簡化了 90% 的程式碼
+
+```python
+from fastmcp import FastMCP
+
+mcp = FastMCP("my-server")
+
+@mcp.tool()
+def add(a: int, b: int) -> int:
+    """Add two numbers"""
+    return a + b
+
+from fastmcp import FastMCP
+```
+
+---
+
+## 2️⃣ 提供 Pythonic 的 API 設計
+
+靈感來源：FastAPI
+FastMCP 借鑒了 FastAPI 的成功設計模式:
+
+| FastAPI | FastMCP | 核心概念 |
+|---------|---------|----------|
+| `@app.get()` | `@mcp.tool()` | 裝飾器模式 |
+| 自動生成 OpenAPI | 自動生成 MCP Schema | 自動文檔 |
+| Type Hints 驅動 | Type Hints 驅動 | 型別安全 |
+| Pydantic 驗證 | Pydantic 驗證 | 自動驗證 |
+
+---
+
+### 實例：Type Hints 的威力
+
+```python
+from typing import List, Dict
+
+@mcp.tool()
+def process_data(
+    items: List[str],           # ← FastMCP 自動知道這是字串陣列
+    config: Dict[str, int],     # ← 自動知道這是字典
+    threshold: float = 0.5      # ← 自動知道有預設值
+) -> Dict[str, List[str]]:      # ← 自動知道回傳型別
+    """處理資料"""
+    # FastMCP 自動:
+    # 1. 生成 JSON Schema
+    # 2. 驗證輸入參數
+    # 3. 處理型別轉換
+    # 4. 產生錯誤訊息
+    return {"filtered": [i for i in items if len(i) > threshold]}
+```
+
+---
+
+### FastMCP 自動生成的 JSON Schema:
+開發者只需要寫業務邏輯，其他都自動處理
+
+```json
+{
+  "name": "process_data",
+  "description": "處理資料",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "items": {"type": "array", "items": {"type": "string"}},
+      "config": {"type": "object"},
+      "threshold": {"type": "number", "default": 0.5}
+    },
+    "required": ["items", "config"]
+  }
+}
+```
+---
+
+## 3️⃣ 內建完整的開發工具鏈
+FastMCP 團隊不只是做了一個框架,而是做了整套生態系統:
+
+### CLI 工具
+
+```bash
+# 快速啟動 (不用寫 main 函數)
+fastmcp run server.py
+
+# 支援多種傳輸協議
+fastmcp run server.py --transport http --port 8000
+fastmcp run server.py --transport stdio
+fastmcp run server.py --transport sse
+
+# 開發模式 (自動重載)
+fastmcp dev server.py
+```
+---
+
+### 內建測試客戶端
+
+```python
+# 不用啟動 Claude,直接測試你的工具
+from fastmcp import Client
+
+async with Client(mcp) as client:
+    result = await client.call_tool(
+        "add", 
+        {"a": 5, "b": 3}
+    )
+    print(result)  # 8
+```
+
+---
+
+## MCP Inspector 整合 - 視覺化除錯工具
+- 所有工具列表
+- 手動測試每個工具
+- 查看 JSON 請求/回應
+
+```bash
+mcp-inspector fastmcp run server.py
+```
+---
+
+## 4️⃣ 企業級功能 (FastMCP 2.0+)
+
+FastMCP 團隊做了很多讓它「生產就緒」的功能:
+
+### 多種身份驗證
+
+```python
+from fastmcp import FastMCP
+from fastmcp.auth import GoogleAuth, GitHubAuth, AzureAuth
+
+# 支援多種 OAuth 提供者
+mcp = FastMCP(
+    "secure-server",
+    auth=GoogleAuth(
+        client_id="...",
+        client_secret="..."
+    )
+)
+```
+---
+
+### Server Composition (組合多個 Server)
+
+```python
+from fastmcp import FastMCP
+
+# 主 Server
+main_mcp = FastMCP("main")
+
+# 子 Server
+db_mcp = FastMCP("database")
+api_mcp = FastMCP("api")
+
+# 組合起來
+main_mcp.include_server(db_mcp, prefix="/db")
+main_mcp.include_server(api_mcp, prefix="/api")
+
+# 現在 Claude 可以用所有工具!
+```
+---
+
+### OpenAPI/FastAPI 整合
+
+```python
+from fastmcp import FastMCP
+from fastapi import FastAPI
+
+app = FastAPI()
+mcp = FastMCP("my-server")
+
+# 將 MCP 工具自動轉成 REST API!
+@mcp.tool()
+def calculate(x: int, y: int) -> int:
+    return x + y
+
+# 自動生成 OpenAPI 文檔
+app.include_router(mcp.to_fastapi_router())
+
+# 現在同一個工具可以:
+# 1. 被 Claude 透過 MCP 調用
+# 2. 被其他系統透過 REST API 調用
+```
+
+---
+
+## 5️⃣ 雲端部署平台 (FastMCP Cloud)
+
+FastMCP 團隊還提供了免費的雲端平台:
+
+```bash
+# 一鍵部署到雲端
+fastmcp deploy server.py
+
+# 得到一個公開 URL
+# https://your-server.fastmcp.cloud
+
+# Claude 可以直接連接,不需要本地運行!
+```
+
+**特色:**
+- 免費託管個人 MCP Server
+- 自動 HTTPS
+- 自動擴展
+- 監控和日誌
+
+---
+
+## 6️⃣ 豐富的範例和文檔
+
+### FastMCP 團隊投入大量心力在文檔:
+
+- 基礎工具
+- 資料庫整合
+- API 串接
+- 檔案處理
+- 非同步操作
+- 錯誤處理
+- 身份驗證
+- 測試策略
+
+---
+
+### 文檔格式:
+
+- 網頁版: https://gofastmcp.com
+- Markdown 版: 可以下載
+- **MCP 版**: 可以用 Claude 搜尋 FastMCP 文檔!
+
+```python
+# 用 Claude 查 FastMCP 文檔
+from fastmcp import Client
+
+async with Client("https://gofastmcp.com/mcp") as client:
+    result = await client.call_tool(
+        "SearchFastMcp",
+        {"query": "how to deploy"}
+    )
+```
+---
+
+## 總結對比表
+
+| 項目 | 原始 MCP SDK | FastMCP |
+|------|-------------|---------|
+| 程式碼量 | 100+ 行 | 10 行 |
+| 學習曲線 | 陡峭 | 平緩 |
+| 型別安全 | 手動 | 自動 |
+| 測試工具 | 需自己寫 | 內建 |
+| 身份驗證 | 需自己實作 | 內建多種 |
+| 部署 | 複雜 | 一鍵部署 |
+| 文檔 | 基礎 | 完整+範例 |
+| 開發時間 | 數天 | 數小時 |
+
+---
+
+## FastMCP 團隊的核心成就
+
+1. **抽象化** - 把複雜的 MCP 協議變成簡單的裝飾器
+2. **自動化** - 自動生成 Schema、驗證、錯誤處理
+3. **工具化** - CLI、測試客戶端、Inspector
+4. **生產化** - 身份驗證、監控、部署工具
+5. **雲端化** - 免費託管平台
+6. **文檔化** - 完整的教學和範例
+7. **社群化** - 開源、活躍維護、快速迭代
+
+---
+
+## FastMCP 的 "Fast" 來自:
+
+1. 減少 90% 的樣板程式碼
+2. 自動處理複雜的協議細節
+3. 提供完整的開發工具鏈
+4. 內建生產級功能
+5. 簡化部署流程
+
+從想法到部署,原本需要幾天,現在只需要幾小時。
+
 
 
 

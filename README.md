@@ -467,7 +467,10 @@ app.include_router(mcp.to_fastapi_router())
 
 ## 5️⃣ 雲端部署平台 (FastMCP Cloud)
 
-FastMCP 團隊還提供了免費的雲端平台:
+- 免費託管個人 MCP Server
+- 自動 HTTPS
+- 自動擴展
+- 監控和日誌
 
 ```bash
 # 一鍵部署到雲端
@@ -478,12 +481,6 @@ fastmcp deploy server.py
 
 # Claude 可以直接連接,不需要本地運行!
 ```
-
-**特色:**
-- 免費託管個人 MCP Server
-- 自動 HTTPS
-- 自動擴展
-- 監控和日誌
 
 ---
 

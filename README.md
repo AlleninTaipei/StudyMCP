@@ -301,7 +301,6 @@ from fastmcp import FastMCP
 
 ## 2️⃣ 提供 Pythonic 的 API 設計
 
-靈感來源：FastAPI
 FastMCP 借鑒了 FastAPI 的成功設計模式:
 
 | FastAPI | FastMCP | 核心概念 |

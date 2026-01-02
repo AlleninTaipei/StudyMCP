@@ -18,7 +18,7 @@ Allen Sun
 ---
 
 # Agent Tools & Interoperability with Model Context Protocol (MCP)
-5-Day AI Agents Intensive Course with Google - Day 1
+5-Day AI Agents Intensive Course with Google - Day 2
 
 ---
 

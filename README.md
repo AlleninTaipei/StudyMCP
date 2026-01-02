@@ -714,13 +714,14 @@ LLM API 呼叫是 完全無狀態（Stateless），#### 狀態必須由系統架
 
 ---
 
-## Context 管理流程
+## Context 管理流程 (單一 Turn)
 
-* 單一 Turn
-  * 1. Fetch Context
-  * 2. Prepare Context   ← Hot Path
-  * 3. Invoke LLM/Tools
-  * 4. Upload Context    ← Async
+```bash  
+1. Fetch Context
+2. Prepare Context   ← Hot Path
+3. Invoke LLM/Tools
+4. Upload Context    ← Async
+```
 
 * Step 1–3：Session 即時資料
 * Step 4：更新 Memory（背景執行）

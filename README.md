@@ -6,8 +6,9 @@ color: #EEF8F7
 paginate: false
 ---
 
-# Introduction to Agents
+# Study MCP
 
+- Introduction to Agents
 - Agent Tools & Interoperability with Model Context Protocol (MCP)
 - FastMCP Cloud
 - Fast to build
@@ -17,8 +18,8 @@ Allen Sun
 
 ---
 
-# Agent Tools & Interoperability with Model Context Protocol (MCP)
-5-Day AI Agents Intensive Course with Google - Day 2
+# Introduction to Agents
+5-Day AI Agents Intensive Course Day 1
 
 ---
 
@@ -53,25 +54,27 @@ Agentic Loop = Think → Act → Observe → Think
 
 ---
 
-### AI Agent 能力分級 (4/8)
+## AI Agent 能力分級 (4/8)
 
-|Level|關鍵能力|
-|:-|:-|
- 0：純 LLM|無工具、無即時資訊|
-|1：連網問題解決者|可使用工具查詢即時資料|
-|2：策略型問題解決者|Context Engineering（用前一步結果精準塑造下一步輸入）|
-|3：多 Agent 協作系統|Agent 彼此視為工具，可進行「目標委派」，各自執行完整計畫後回傳結果|
-|4：自我演化系統（前沿）|能識別自身能力缺口，可動態建立新 Agent 或工具來補足能力|
+* 純 LLM：無工具、無即時資訊
+* 連網問題解決者：可使用工具查詢即時資料
+* 策略型問題解決者：Context Engineering（用前一步結果精準塑造下一步輸入）
+* 多 Agent 協作系統：Agent 彼此視為工具，可進行「目標委派」，各自執行完整計畫後回傳結果
+* 自我演化系統（前沿）：能識別自身能力缺口，可動態建立新 Agent 或工具來補足能力
 
 ---
 
 #### 走向生產環境的關鍵工程實務 (5/8)
 
-|工程實務||
-|:-|:-|
-|模型選擇與 Routing|複雜規劃 → 高階模型<br>簡單高頻任務 → 快速低成本模型|
-|工具可靠性|使用 RAG、向量資料庫、NL2SQL 進行資料檢索<br>透過 Function Calling（結構化工具描述），確保模型能正確呼叫與解析結果|
-|記憶管理|短期記憶：當前任務的思考與行動紀錄<br>長期記憶：跨任務的偏好、知識與經驗（常用向量資料庫實作）
+* 模型選擇與 Routing
+  * 複雜規劃 → 高階模型
+  * 簡單高頻任務 → 快速低成本模型
+* 工具可靠性
+  * 使用 RAG、向量資料庫、NL2SQL 進行資料檢索
+  * 透過 Function Calling（結構化工具描述），確保模型能正確呼叫與解析結果
+* 記憶管理
+  * 短期記憶：當前任務的思考與行動紀錄
+  * 長期記憶：跨任務的偏好、知識與經驗（常用向量資料庫實作）
 
 ---
 
@@ -86,18 +89,18 @@ Agentic Loop = Think → Act → Observe → Think
 
 ---
 
-## 安全、治理與規模化 (7/8)
+### 安全、治理與規模化 (7/8)
 
-### 採用 Defense in Depth（多層防禦）
+#### 採用 Defense in Depth（多層防禦）
 
 * 程式層 guardrails（硬規則）
 * AI Guard Models（風險行為偵測）
 
-### Agent 身分識別
+#### Agent 身分識別
 
 * Agent 擁有獨立身分與最小權限（非使用者代言）
 
-### Agent Governance
+#### Agent Governance
 
 * 透過中央 Gateway 控制 agent、工具、agent-to-agent 通訊
 
@@ -113,9 +116,8 @@ Agent Gym（模擬環境）
 
 ---
 
-## 總結關鍵觀點
+## 成功的 AI Agent 不只靠模型聰明，而是取決於：
 
-成功的 AI Agent 不只靠模型聰明，而是取決於：
 * 架構設計
 * 工具與編排
 * 測試、觀測、安全與治理
@@ -123,7 +125,144 @@ Agent Gym（模擬環境）
 開發者角色正在轉變：
 從寫程式的人 → 設計、指揮、治理自主 AI 系統的架構師。
 
-----
+---
+
+# Agent Tools & Interoperability with Model Context Protocol (MCP)
+5-Day AI Agents Intensive Course with Google - Day 2
+
+---
+
+## 為何需要 Agentic AI (1/7)
+
+* 基礎模型雖然聰明，但受限於訓練資料，無法即時感知世界或直接採取行動。
+* LLM 是「大腦」，工具（Tools）是「眼睛與手」，讓模型能查詢即時資訊、呼叫 API、修改系統狀態。
+
+---
+
+<style scoped>section{font-size:24px;}</style>
+
+### 工具（Tools）的定義與類型 (2/7)
+
+工具是 LLM 無法原生完成、但可透過外部函式或系統執行的能力
+
+#### 🔲Function Tools（函式工具）
+
+* 開發者自行定義的外部函式（如 Python）
+* 透過清楚的 docstring 定義輸入、輸出與行為（即「契約」）
+
+#### 🔲Built-in Tools（內建工具）
+
+* 模型平台隱含提供，如搜尋（Grounding）、程式碼執行、抓取 URL 內容
+
+#### 🔲Agent Tools（代理工具）
+
+* 將「另一個代理」當作工具呼叫
+* 主代理仍保有控制權，屬於階層式委派，而非完全交接任務
+
+此外，工具也可依功能分類為：
+資訊擷取、動作執行、系統 API 整合、人類介入（Human-in-the-loop）。
+
+---
+
+<style scoped>section{font-size:24px;}</style>
+
+#### 工具設計的關鍵最佳實務 (3/7)
+
+#### 🔲文件至上（Documentation is paramount）
+
+* 工具名稱、描述、參數即是 LLM 的操作說明書。 明確命名遠勝於模糊命名|
+
+#### 🔲描述「要做什麼」，不是「怎麼做」
+
+* 讓 LLM 負責推理，工具只負責執行
+
+#### 🔲封裝任務，而非暴露原始 API
+
+* 工具應代表高層次任務（如「預訂會議室」），而非複雜 API 呼叫
+
+#### 🔲輸出要精簡
+
+* 避免將大量原始資料塞進 context
+* 回傳摘要、確認訊息，或指向外部資料的 URI
+
+#### 🔲錯誤訊息需具指引性
+
+* 不只是錯誤碼，而是告訴 LLM 發生什麼事、如何恢復（如等待多久再重試）
+
+---
+
+<style scoped>section{font-size:24px;}</style>
+
+## MCP（Model Context Protocol）(4/7)
+
+* 2024 年提出的開放標準，目標是解決過去「模型 × 工具」整合的指數型複雜度問題。將「推理（Agent）」與「執行（Tool）」徹底解耦，達成即插即用。
+* 採用類似 LSP（Language Server Protocol）的 Client–Server 架構
+
+
+#### 🔲MCP Host：主應用程式，負責使用者體驗、推理流程與安全政策
+#### 🔲MCP Client：嵌在 Host 中，負責與 Server 通訊與 session 管理
+#### 🔲MCP Server：提供實際工具，宣告能力、執行指令、回傳結果
+#### 🔲通訊協定：JSON-RPC 2.0
+
+* 本地：STDIO（快速、低延遲）
+* 遠端：Streamable HTTP（支援串流回傳）
+
+---
+
+## MCP 中的工具定義與錯誤處理 (5/7)
+
+工具以 JSON Schema 定義輸入與（可選）輸出
+
+* 結構化：最理想、易於推理
+* 非結構化：文字、圖片、音訊或外部資源 URI
+* Protocol 層錯誤（方法不存在、參數錯誤）
+* 工具執行錯誤（API 失敗等，透過 is_error 標示）
+
+---
+
+## MCP 帶來的整體價值 (6/7)
+
+#### 加速開發、促進工具生態系重用
+#### 支援工具動態發現，提升 Agent 自主性
+#### 架構高度模組化，有利於建構 Agent Mesh（代理網路）
+
+---
+
+<style scoped>section{font-size:24px;}</style>
+
+## 主要挑戰：Context Window 與工具規模 (7/7)
+
+若 Agent 同時可用上千個工具，context 會爆炸、成本高、推理品質下降
+
+#### 解法：Tool Retrieval（工具檢索）
+
+* 先用語意搜尋找出最相關的少數工具
+* 只將這些工具定義載入 context（類似 RAG，但用在工具）
+
+## 企業級安全風險與解法
+
+#### MCP 本身不內建強式驗證與授權
+#### 重大風險：Confused Deputy（困惑代理）
+
+* 使用者透過提示注入，誘使高權限工具替其執行未授權操作
+
+#### 實務解法：
+
+* MCP 外層必須加上企業級 API Gateway
+* 負責身分驗證、細粒度授權、限流、審計、輸入過濾
+
+---
+
+## LLM 是大腦，工具是手腳
+## MCP 正逐漸成為連接兩者的標準語言
+
+## 真正成功的 Agentic AI 來自於：
+#### 🔲良好的工具設計
+#### 🔲精簡的輸出
+#### 🔲可恢復的錯誤處理
+#### 🔲以及 MCP 之外完善的安全與治理架構
+
+---
 
 # FastMCP Cloud
 [🔗](https://fastmcp.cloud) 部署 MCP Server 的最快方法

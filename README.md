@@ -66,7 +66,9 @@ Agentic Loop = Think → Act → Observe → Think
 
 ---
 
-#### 走向生產環境的關鍵工程實務
+<style scoped>section{font-size:32px;}</style>
+
+## 走向生產環境的關鍵工程實務
 
 * 模型選擇與 Routing
   * 複雜規劃 → 高階模型
@@ -91,7 +93,7 @@ Agentic Loop = Think → Act → Observe → Think
 
 ---
 
-### 安全、治理與規模化
+## 安全、治理與規模化
 
 * 採用 Defense in Depth（多層防禦）
   * 程式層 guardrails（硬規則）
@@ -133,9 +135,9 @@ Agentic Loop = Think → Act → Observe → Think
 
 ---
 
-<style scoped>section{font-size:24px;}</style>
+<style scoped>section{font-size:26px;}</style>
 
-### 工具（Tools）的定義與類型
+## 工具（Tools）的定義與類型
 
 工具是 LLM 無法原生完成、但可透過外部函式或系統執行的能力
 
@@ -258,7 +260,7 @@ Agentic Loop = Think → Act → Observe → Think
 ### Python main guard ( entry point pattern)
 
 ```python
-if __name__ == "__main__"
+if __name__ == "__main__:"
 ```
 讓同一個 .py 檔案既能當模組被導入，又能當獨立程式執行
 
@@ -400,8 +402,6 @@ mcp = FastMCP("my-server")
 def add(a: int, b: int) -> int:
     """Add two numbers"""
     return a + b
-
-from fastmcp import FastMCP
 ```
 
 ---
@@ -459,6 +459,7 @@ def process_data(
   }
 }
 ```
+
 ---
 
 ## 3️⃣ 內建完整的開發工具鏈
@@ -594,22 +595,22 @@ fastmcp deploy server.py
 
 FastMCP 團隊投入大量心力在文檔
 
-- 基礎工具
-- 資料庫整合
-- API 串接
-- 檔案處理
-- 非同步操作
-- 錯誤處理
-- 身份驗證
-- 測試策略
+* 基礎工具
+* 資料庫整合
+* API 串接
+* 檔案處理
+* 非同步操作
+* 錯誤處理
+* 身份驗證
+* 測試策略
 
 ---
 
-### 文檔格式:
+### 文檔格式
 
-- 網頁版: https://gofastmcp.com
-- Markdown 版: 可以下載
-- **MCP 版**: 可以用 Claude 搜尋 FastMCP 文檔!
+* 網頁版：https://gofastmcp.com
+* Markdown 版：可以下載
+* MCP 版：可以用 Claude 搜尋 FastMCP 文檔!
 
 ```python
 # 用 Claude 查 FastMCP 文檔
@@ -624,7 +625,7 @@ async with Client("https://gofastmcp.com/mcp") as client:
 ---
 
 | 項目 | 原始 MCP SDK | FastMCP |
-|------|-------------|---------|
+|:------|:-------------|:---------|
 | 程式碼量 | 100+ 行 | 10 行 |
 | 學習曲線 | 陡峭 | 平緩 |
 | 型別安全 | 手動 | 自動 |
@@ -648,7 +649,7 @@ async with Client("https://gofastmcp.com/mcp") as client:
 
 ---
 
-## FastMCP 的 "Fast" 來自:
+## FastMCP 的 "Fast" 來自
 
 * 減少 90% 的樣板程式碼
 * 自動處理複雜的協議細節
@@ -660,7 +661,7 @@ async with Client("https://gofastmcp.com/mcp") as client:
 
 ---
 
-## Context Engineering: Sessions & Memory
+# Context Engineering: Sessions & Memory
 5-Day AI Agents Intensive Course with Google - Day 3
 
 ---
@@ -673,7 +674,7 @@ async with Client("https://gofastmcp.com/mcp") as client:
 * 無法個人化
 * 無法長期學習
 
-LLM API 呼叫是 完全無狀態（Stateless），#### 狀態必須由系統架構補上，而不是模型本身。
+LLM API 呼叫是 完全無狀態（Stateless），狀態必須由系統架構補上，而不是模型本身。
 
 ---
 
@@ -741,8 +742,8 @@ LLM API 呼叫是 完全無狀態（Stateless），#### 狀態必須由系統架
 
 |Framework|Session 設計差異|
 |:-|:-|
-|ADK|顯式 Session Object（Events / State 分離）|
-|LangGraph|可變 State 即 Session，更適合 原地壓縮與摘要|
+|ADK|顯式 Session Object<br>Events / State 分離）|
+|LangGraph|可變 State 即 Session<br>更適合 原地壓縮與摘要|
 
 ---
 
@@ -753,11 +754,11 @@ LLM API 呼叫是 完全無狀態（Stateless），#### 狀態必須由系統架
 * Shared History
   * 所有 Agent 共用
   * 高協作性
-  * 雜訊風險高
+  * ⚠️ 雜訊風險高
 
 * Separate History
   * Agent 彼此隔離
-  * 溝通透過 message / tool
+  * 溝通透過 Message / Tool
   * 需額外 Memory Layer 共享知識
 
 * Production 注意事項
@@ -834,16 +835,16 @@ LLM API 呼叫是 完全無狀態（Stateless），#### 狀態必須由系統架
 #### Memory Retrieval
 
 * 建議混合評分：
-  * Relevance 語意相似
-  * Recency 新近程度
-  * Importance 初始權重
+  * Relevance - 語意相似
+  * Recency - 新近程度
+  * Importance - 初始權重
 * 檢索模式
   * Proactive：每 turn 預取
   * Reactive：Agent 主動查詢
 
 #### Inference with Memories
 
-* System Prompt權重高、風險高
+* System Prompt：權重高、風險高
 * Conversation History：自然但易混淆
 
 ---
@@ -854,7 +855,7 @@ LLM API 呼叫是 完全無狀態（Stateless），#### 狀態必須由系統架
 * 記憶檢索：Recall@K
 * 效能：Lookup latency < 200ms
 * 最終指標：End-to-end 任務成功率
-* 常用 LLM-as-a-Judge
+* 常用方法：LLM-as-a-Judge
 
 ---
 

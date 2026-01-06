@@ -681,13 +681,13 @@ LLM API 呼叫是 完全無狀態（Stateless），狀態必須由系統架構�
 ## 記憶體架構
 
 | 模組                  | 職責                  |
-| ------------------- | ------------------- |
+| :------------------ | :------------------ |
 | Context Engineering | 每次呼叫動態組裝最適 context  |
 | Session             | 單次對話的即時狀態與歷史        |
 | Memory              | 跨 Session 的長期知識與個人化 |
 
 | Prompt Engineering | Context Engineering |
-| ------------------ | ------------------- |
+| :----------------- | :------------------ |
 | 靜態 prompt          | 動態組裝                |
 | 偏文字技巧              | 偏系統設計               |
 | 單一輸入               | 多來源資料整合             |
@@ -763,8 +763,8 @@ LLM API 呼叫是 完全無狀態（Stateless），狀態必須由系統架構�
 
 * Production 注意事項
   * 嚴格使用者隔離（ACL）
-  * PII 必須寫入前去識別
-  * TTL / Retention Policy
+  * PII 必須寫入前去識別 (Personally Identifiable Information)
+  * 保留政策 TTL (Time To Live) / Retention Policy
   * 決定性事件順序
   * Session 存取效能（Hot Path）
 
@@ -819,7 +819,7 @@ LLM API 呼叫是 完全無狀態（Stateless），狀態必須由系統架構�
 |LLM 驅動 ETL<br>(Extract → Consolidate → Load)|⚠️ 全流程必須 Async|
 |:-|:-|
 |1. Extract|根據 Agent 任務定義重要訊號<br>規則 / 範例 / Topic|
-|2. Consolidate（關鍵）|新增 / 更新 / 刪除><br>處理衝突<br>Relevance Decay（遺忘）|
+|2. Consolidate（關鍵）|新增 / 更新 / 刪除<br>處理衝突<br>Relevance Decay（遺忘）|
 ||考量因素：Provenance（來源）<br>時間<br>是否使用者明確陳述<br>重複強化次數|
 |3. Load|寫入 Memory Store|
 
@@ -866,4 +866,6 @@ LLM API 呼叫是 完全無狀態（Stateless），狀態必須由系統架構�
 * Memory 解決「長期」
 * LLM 驅動 ETL 是真正讓 Agent「學習」的關鍵
 
-成熟的 Agent ≠ 知識多，而是 記得對的人、對的事、在對的時機
+**成熟的 Agent ≠ 知識多，而是 記得對的人、對的事、在對的時機**
+
+```
